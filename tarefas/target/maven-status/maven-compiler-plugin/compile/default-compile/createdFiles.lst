@@ -1,0 +1,16 @@
+com\sistema\repository\BaseRepository.class
+com\sistema\config\DatabaseConfig.class
+com\sistema\dao\ProjetoDAO.class
+com\sistema\repository\UsuarioRepository.class
+com\sistema\dao\UsuarioDAO.class
+com\sistema\model\Projeto.class
+com\sistema\App.class
+com\sistema\controller\ProjetoController.class
+com\sistema\controller\UsuarioController.class
+com\sistema\repository\ProjetoRepository.class
+com\sistema\dao\TarefaDAO.class
+com\sistema\model\Usuario.class
+com\sistema\model\Base.class
+com\sistema\controller\TarefaController.class
+com\sistema\model\Tarefa.class
+com\sistema\repository\TarefaRepository.class
