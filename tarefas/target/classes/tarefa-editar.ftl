@@ -39,7 +39,6 @@
         </form>
       </div>
       <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-      <#-- Volta para o projeto se houver ID, caso contrário volta para tarefas gerais -->
       <a href="${(tarefa.projetoId gt 0)?string('/projetos-view/' + tarefa.projetoId, '/tarefas-view')}">
         <button type="button" class="voltar">
           Cancelar e Voltar
