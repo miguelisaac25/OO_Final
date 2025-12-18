@@ -16,7 +16,7 @@ public class App {
     Javalin app = Javalin.create(config -> {
       config.fileRenderer(new JavalinFreemarker());
       config.staticFiles.add(staticFiles -> {
-        staticFiles.directory = "public";
+        staticFiles.directory = "/public";
         staticFiles.location = Location.CLASSPATH;
       });
     }).start(7000);

@@ -233,3 +233,9 @@ li button {
         text-align: right;
     }
 }
+
+.acoes a {
+    text-decoration: none;
+    display: inline-block;
+    line-height: 0;
+}

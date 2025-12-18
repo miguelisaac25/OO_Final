@@ -63,17 +63,40 @@ public class TarefaController {
             int id = Integer.parseInt(ctx.pathParam("id"));
             Tarefa tarefa = repository.buscarPorId(id);
 
-            if (tarefa == null || tarefa.getUsuarioId() != usuarioId) {
-                ctx.status(404);
+            if (tarefa != null && tarefa.getUsuarioId() == usuarioId) {
+                tarefa.setTitulo(ctx.formParam("titulo"));
+                tarefa.setDescricao(ctx.formParam("descricao"));
+                dao.atualizar(tarefa);
+
+                if (tarefa.getProjetoId() > 0) {
+                    ctx.redirect("/projetos-view/" + tarefa.getProjetoId());
+                } else {
+                    ctx.redirect("/tarefas-view");
+                }
+            }
+        });
+
+        app.post("/tarefas-view/{id}/toggle", ctx -> {
+            Integer usuarioId = ctx.sessionAttribute("usuarioId");
+            if (usuarioId == null) {
+                ctx.redirect("/login-view");
                 return;
             }
 
-            tarefa.setTitulo(ctx.formParam("titulo"));
-            tarefa.setDescricao(ctx.formParam("descricao"));
-            tarefa.setStatus(ctx.formParam("status"));
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Tarefa tarefa = repository.buscarPorId(id);
 
-            dao.atualizar(tarefa);
-            ctx.redirect("/tarefas-view");
+            if (tarefa != null && tarefa.getUsuarioId() == usuarioId) {
+                if ("Concluida".equals(tarefa.getStatus())) {
+                    tarefa.setStatus("Pendente");
+                } else {
+                    tarefa.setStatus("Concluida");
+                }
+                dao.atualizar(tarefa);
+            }
+
+            String referer = ctx.header("Referer");
+            ctx.redirect(referer != null ? referer : "/projetos-view");
         });
 
         app.post("/tarefas-view/{id}/delete", ctx -> {

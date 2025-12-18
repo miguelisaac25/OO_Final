@@ -6,6 +6,18 @@
       Projeto ${projeto.nome}
     </title>
     <link rel="stylesheet" href="/style.css">
+    <style>
+      .acoes a {
+      text-decoration: none !important;
+      display: inline-block;
+      vertical-align: middle;
+      }
+      .acoes form {
+      display: inline-block;
+      margin: 0;
+      vertical-align: middle;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -25,32 +37,52 @@
           Deletar Projeto
         </button>
       </form>
+      <hr>
       <h2>
         Tarefas
       </h2>
       <form method="post" action="/projetos-view/${projeto.id}/tarefas" class="novo-projeto">
-        <input type="text" name="titulo" placeholder="Descrição da tarefa" required>
+        <input type="text" name="titulo" placeholder="Título da tarefa" required>
+        <input type="text" name="descricao" placeholder="Descrição">
         <button type="submit">
           Adicionar Tarefa
         </button>
       </form>
       <ul style="list-style: none; padding: 0;">
         <#list tarefas as t>
-          <li style="margin-bottom: 10px; display: flex; align-items: center;">
-            <#if t.status == "Concluida">
-              <s>
-                ${t.titulo}
-              </s>
-            <#else>
-              ${t.titulo}
-            </#if>
-            <div style="margin-left: auto;" class="acoes">
-              <a href="/tarefas-view/${t.id}/editar">
+          <li style="margin-bottom: 10px; display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <#-- Botão de Concluir/Reabrir -->
+            <form method="post" action="/tarefas-view/${t.id}/toggle" style="margin-right: 15px;">
+              <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 20px; padding: 0;">
+                <#if t.status == "Concluida">
+                  ✅
+                <#else>
+                  ⭕
+                </#if>
+              </button>
+            </form>
+            <div style="flex-grow: 1;">
+              <#if t.status == "Concluida">
+                <s style="color: #888;">
+                  ${t.titulo}
+                </s>
+              <#else>
+                <strong>
+                  ${t.titulo}
+                </strong>
+              </#if>
+              <br>
+              <small style="color: #666;">
+                ${t.descricao!""}
+              </small>
+            </div>
+            <div class="acoes">
+              <a href="/tarefas-view/${t.id}/editar" class="btn-link">
                 <button type="button" class="editar">
                   Editar
                 </button>
               </a>
-              <form method="post" action="/tarefas-view/${t.id}/delete" style="display:inline">
+              <form method="post" action="/tarefas-view/${t.id}/delete">
                 <button type="submit" class="deletar">
                   Excluir
                 </button>

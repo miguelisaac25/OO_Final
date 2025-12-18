@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8">
     <title>
-      Editar Tarefa
+      Editar Tarefa | Gestão de Projetos
     </title>
     <link rel="stylesheet" href="/style.css">
   </head>
@@ -17,17 +17,32 @@
           Sair
         </button>
       </a>
-      <form method="post" action="/tarefas-view/${tarefa.id}/editar" class="novo-projeto">
-        <input type="text" name="titulo" placeholder="Descrição da tarefa" value="${tarefa.titulo}" required>
-        <input type="text" name="descricao" value="${tarefa.descricao}">
-        <input type="text" name="status" value="${tarefa.status}">
-        <button type="submit">
-          Salvar Alterações
-        </button>
-      </form>
-      <a href="/tarefas-view">
+      <div class="edit-box">
+        <form method="post" action="/tarefas-view/${tarefa.id}/editar">
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
+            <label for="titulo">
+              Título da Tarefa:
+            </label>
+            <input type="text" id="titulo" name="titulo" 
+                           placeholder="Ex: Finalizar relatório" 
+                           value="${tarefa.titulo}" required>
+            <label for="descricao">
+              Descrição:
+            </label>
+            <input type="text" id="descricao" name="descricao" 
+                           placeholder="Detalhes da tarefa..." 
+                           value="${tarefa.descricao!''}">
+            <button type="submit" style="margin-top: 10px;">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+      <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+      <#-- Volta para o projeto se houver ID, caso contrário volta para tarefas gerais -->
+      <a href="${(tarefa.projetoId gt 0)?string('/projetos-view/' + tarefa.projetoId, '/tarefas-view')}">
         <button type="button" class="voltar">
-          Voltar para Tarefas
+          Cancelar e Voltar
         </button>
       </a>
     </div>
