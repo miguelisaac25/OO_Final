@@ -34,52 +34,36 @@
           Adicionar Tarefa
         </button>
       </form>
-      <h2>
-        Tarefas
-      </h2>
       <ul style="list-style: none; padding: 0;">
         <#list tarefas as t>
           <li style="margin-bottom: 10px; display: flex; align-items: center;">
-            <input type="checkbox" disabled <#if t.status == "Concluida">
-            checked
-          </#if>
-          style="margin-right: 10px;">
-          <#if t.status == "Concluida">
-            <s>
+            <#if t.status == "Concluida">
+              <s>
+                ${t.titulo}
+              </s>
+            <#else>
               ${t.titulo}
-            </s>
-          <#else>
-            ${t.titulo}
-          </#if>
-          <div style="margin-left: auto;" class="acoes">
-            <form style="display:inline" method="post" action="/projetos-view/${projeto.id}/tarefas/${t.id}/toggle">
-              <button type="submit" style="margin-left: 10px;">
-                <#if t.status == "Concluida">
-                  Reabrir
-                <#else>
-                  Concluir
-                </#if>
-              </button>
-            </form>
-            <a href="/projetos-view/${projeto.id}/tarefas/${t.id}/editar" style="margin-left: 10px;">
-              <button type="button" class="editar">
-                Editar
-              </button>
-            </a>
-            <form style="display:inline" method="post" action="/projetos-view/${projeto.id}/tarefas/${t.id}/delete" style="margin-left: 10px;">
-              <button type="submit" class="deletar">
-                Excluir
-              </button>
-            </form>
-          </div>
-        </li>
-      </#list>
-    </ul>
-    <a href="/projetos-view/">
-      <button type="button" class="voltar">
-        Voltar para Projetos
-      </button>
-    </a>
-  </div>
-</body>
+            </#if>
+            <div style="margin-left: auto;" class="acoes">
+              <a href="/tarefas-view/${t.id}/editar">
+                <button type="button" class="editar">
+                  Editar
+                </button>
+              </a>
+              <form method="post" action="/tarefas-view/${t.id}/delete" style="display:inline">
+                <button type="submit" class="deletar">
+                  Excluir
+                </button>
+              </form>
+            </div>
+          </li>
+        </#list>
+      </ul>
+      <a href="/projetos-view">
+        <button type="button" class="voltar">
+          Voltar para Projetos
+        </button>
+      </a>
+    </div>
+  </body>
 </html>

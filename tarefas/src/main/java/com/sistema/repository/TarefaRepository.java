@@ -9,6 +9,10 @@ public class TarefaRepository {
 
     private TarefaDAO dao = new TarefaDAO();
 
+    public Tarefa buscarPorId(int id) {
+        return dao.buscarPorId(id);
+    }
+
     public List<Tarefa> listarPorUsuario(int usuarioId) {
         return dao.listarPorUsuario(usuarioId);
     }
@@ -16,4 +20,5 @@ public class TarefaRepository {
     public List<Tarefa> listarPorProjeto(int projetoId) {
         return dao.listarPorProjeto(projetoId);
     }
+
 }
