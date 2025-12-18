@@ -2,20 +2,20 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Cadastro</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
 
-        .login-container {
+        .register-container {
             background-color: #fff;
             padding: 40px 30px;
             border-radius: 12px;
@@ -24,12 +24,12 @@
             text-align: center;
         }
 
-        .login-container h1 {
+        .register-container h1 {
             margin-bottom: 30px;
             color: #333;
         }
 
-        .login-container input {
+        .register-container input {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -38,10 +38,10 @@
             font-size: 14px;
         }
 
-        .login-container button {
+        .register-container button {
             width: 100%;
             padding: 12px;
-            background-color: #2575fc;
+            background-color: #6a11cb;
             color: white;
             font-size: 16px;
             font-weight: bold;
@@ -49,38 +49,32 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 15px;
-            transition: background 0.3s;
         }
 
-        .login-container button:hover {
-            background-color: #1a5fd4;
+        .register-container button:hover {
+            background-color: #5710a3;
         }
 
-        .login-container p {
+        .register-container p {
             margin-top: 15px;
             font-size: 13px;
-            color: #666;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Entrar</h1>
-        <#if erro??>
-            <p style="color: red; font-weight: bold;">${erro}</p>
-        </#if>
-        <form method="post" action="/login">
+    <div class="register-container">
+        <h1>Criar Conta</h1>
+
+        <form method="post" action="/register">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="senha" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
+            <button type="submit">Cadastrar</button>
         </form>
 
         <p>
-            Não tem uma conta?
-            <a href="/register-view" style="color:#2575fc; font-weight:bold;">
-             Criar conta
-            </a>
+            Já tem conta?
+            <a href="/login-view">Entrar</a>
         </p>
-
+    </div>
 </body>
 </html>

@@ -3,56 +3,18 @@ package com.sistema.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sistema.dao.TarefaDAO;
 import com.sistema.model.Tarefa;
 import com.sistema.repository.TarefaRepository;
+
 import io.javalin.Javalin;
 
 public class TarefaController {
 
+    private final TarefaDAO dao = new TarefaDAO();
     private final TarefaRepository repository = new TarefaRepository();
 
     public void registrar(Javalin app) {
-
-        app.post("/tarefas", ctx -> {
-            Tarefa tarefa = ctx.bodyAsClass(Tarefa.class);
-            repository.salvar(tarefa);
-            ctx.status(201).result("Tarefa criada com sucesso");
-        });
-
-        app.get("/tarefas", ctx -> {
-            ctx.json(repository.listar());
-        });
-
-        app.get("/tarefas/{id}", ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            Tarefa tarefa = (Tarefa) repository.buscarPorId(id);
-
-            if (tarefa == null) {
-                ctx.status(404).result("Tarefa não encontrada");
-            } else {
-                ctx.json(tarefa);
-            }
-        });
-
-        app.put("/tarefas/{id}", ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            Tarefa tarefa = ctx.bodyAsClass(Tarefa.class);
-            tarefa.setId(id);
-
-            repository.salvar(tarefa);
-            ctx.result("Tarefa atualizada com sucesso");
-        });
-
-        app.delete("/tarefas/{id}", ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            repository.deletar(id);
-            ctx.result("Tarefa removida com sucesso");
-        });
-
-        app.get("/tarefas-usuario/{usuarioId}", ctx -> {
-            int usuarioId = Integer.parseInt(ctx.pathParam("usuarioId"));
-            ctx.json(repository.listarPorUsuario(usuarioId));
-        });
 
         app.get("/tarefas-view", ctx -> {
             Integer usuarioId = ctx.sessionAttribute("usuarioId");
@@ -76,12 +38,73 @@ public class TarefaController {
             Tarefa tarefa = new Tarefa();
             tarefa.setTitulo(ctx.formParam("titulo"));
             tarefa.setDescricao(ctx.formParam("descricao"));
-            tarefa.setStatus(ctx.formParam("status"));
+            tarefa.setStatus("Pendente");
             tarefa.setUsuarioId(usuarioId);
 
-            repository.salvar(tarefa);
+            dao.inserir(tarefa);
             ctx.redirect("/tarefas-view");
         });
 
+        app.get("/tarefas-view/{id}/editar", ctx -> {
+            Integer usuarioId = ctx.sessionAttribute("usuarioId");
+            if (usuarioId == null) {
+                ctx.redirect("/login-view");
+                return;
+            }
+
+            int tarefaId = Integer.parseInt(ctx.pathParam("id"));
+            Tarefa tarefa = dao.buscarPorId(tarefaId);
+
+            if (tarefa == null || tarefa.getUsuarioId() != usuarioId) {
+                ctx.status(404);
+                return;
+            }
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("tarefa", tarefa);
+            ctx.render("tarefa-editar.ftl", model);
+        });
+
+        app.post("/tarefas-view/{id}/editar", ctx -> {
+            Integer usuarioId = ctx.sessionAttribute("usuarioId");
+            if (usuarioId == null) {
+                ctx.redirect("/login-view");
+                return;
+            }
+
+            int tarefaId = Integer.parseInt(ctx.pathParam("id"));
+            Tarefa tarefa = dao.buscarPorId(tarefaId);
+
+            if (tarefa == null || tarefa.getUsuarioId() != usuarioId) {
+                ctx.status(404).result("Tarefa não encontrada");
+                return;
+            }
+
+            tarefa.setTitulo(ctx.formParam("titulo"));
+            tarefa.setDescricao(ctx.formParam("descricao"));
+            tarefa.setStatus(ctx.formParam("status"));
+
+            dao.atualizar(tarefa);
+            ctx.redirect("/tarefas-view");
+        });
+
+        app.post("/tarefas-view/{id}/delete", ctx -> {
+            Integer usuarioId = ctx.sessionAttribute("usuarioId");
+            if (usuarioId == null) {
+                ctx.redirect("/login-view");
+                return;
+            }
+
+            int tarefaId = Integer.parseInt(ctx.pathParam("id"));
+            Tarefa tarefa = dao.buscarPorId(tarefaId);
+
+            if (tarefa == null || tarefa.getUsuarioId() != usuarioId) {
+                ctx.status(404).result("Tarefa não encontrada");
+                return;
+            }
+
+            dao.deletar(tarefaId);
+            ctx.redirect("/tarefas-view");
+        });
     }
 }

@@ -1,19 +1,23 @@
 package com.sistema.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.sistema.dao.ProjetoDAO;
+import com.sistema.dao.TarefaDAO;
 import com.sistema.model.Projeto;
 import com.sistema.model.Tarefa;
 import com.sistema.repository.ProjetoRepository;
 import com.sistema.repository.TarefaRepository;
-
 import io.javalin.Javalin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProjetoController {
 
-    private ProjetoRepository repository = new ProjetoRepository();
-    private TarefaRepository tarefaRepo = new TarefaRepository();
+    private final ProjetoDAO projetoDAO = new ProjetoDAO();
+    private final TarefaDAO tarefaDAO = new TarefaDAO();
+
+    private final ProjetoRepository projetoRepo = new ProjetoRepository();
+    private final TarefaRepository tarefaRepo = new TarefaRepository();
 
     public void registrar(Javalin app) {
 
@@ -25,7 +29,7 @@ public class ProjetoController {
             }
 
             Map<String, Object> model = new HashMap<>();
-            model.put("projetos", repository.listarPorUsuario(usuarioId));
+            model.put("projetos", projetoRepo.listarPorUsuario(usuarioId));
             ctx.render("projetos.ftl", model);
         });
 
@@ -41,7 +45,7 @@ public class ProjetoController {
             projeto.setDescricao(ctx.formParam("descricao"));
             projeto.setUsuarioId(usuarioId);
 
-            repository.salvar(projeto);
+            projetoDAO.inserir(projeto);
             ctx.redirect("/projetos-view");
         });
 
@@ -53,10 +57,10 @@ public class ProjetoController {
             }
 
             int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            Projeto projeto = repository.buscarPorId(projetoId);
+            Projeto projeto = projetoDAO.buscarPorId(projetoId);
 
             if (projeto == null || projeto.getUsuarioId() != usuarioId) {
-                ctx.status(404).result("Projeto não encontrado");
+                ctx.status(404);
                 return;
             }
 
@@ -75,10 +79,10 @@ public class ProjetoController {
             }
 
             int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            Projeto projeto = repository.buscarPorId(projetoId);
+            Projeto projeto = projetoDAO.buscarPorId(projetoId);
 
             if (projeto == null || projeto.getUsuarioId() != usuarioId) {
-                ctx.status(404).result("Projeto não encontrado");
+                ctx.status(404);
                 return;
             }
 
@@ -95,17 +99,17 @@ public class ProjetoController {
             }
 
             int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            Projeto projeto = repository.buscarPorId(projetoId);
+            Projeto projeto = projetoDAO.buscarPorId(projetoId);
 
             if (projeto == null || projeto.getUsuarioId() != usuarioId) {
-                ctx.status(404).result("Projeto não encontrado");
+                ctx.status(404);
                 return;
             }
 
             projeto.setNome(ctx.formParam("nome"));
             projeto.setDescricao(ctx.formParam("descricao"));
 
-            repository.salvar(projeto);
+            projetoDAO.atualizar(projeto);
             ctx.redirect("/projetos-view");
         });
 
@@ -117,16 +121,17 @@ public class ProjetoController {
             }
 
             int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            Projeto projeto = repository.buscarPorId(projetoId);
+            Projeto projeto = projetoDAO.buscarPorId(projetoId);
 
             if (projeto == null || projeto.getUsuarioId() != usuarioId) {
-                ctx.status(404).result("Projeto não encontrado");
+                ctx.status(404);
                 return;
             }
 
-            tarefaRepo.listarPorProjeto(projetoId).forEach(t -> tarefaRepo.deletar(t.getId()));
-            repository.deletar(projetoId);
+            tarefaRepo.listarPorProjeto(projetoId)
+                    .forEach(t -> tarefaDAO.deletar(t.getId()));
 
+            projetoDAO.deletar(projetoId);
             ctx.redirect("/projetos-view");
         });
 
@@ -138,10 +143,10 @@ public class ProjetoController {
             }
 
             int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            Projeto projeto = repository.buscarPorId(projetoId);
+            Projeto projeto = projetoDAO.buscarPorId(projetoId);
 
             if (projeto == null || projeto.getUsuarioId() != usuarioId) {
-                ctx.status(404).result("Projeto não encontrado");
+                ctx.status(404);
                 return;
             }
 
@@ -152,107 +157,7 @@ public class ProjetoController {
             tarefa.setProjetoId(projetoId);
             tarefa.setUsuarioId(usuarioId);
 
-            tarefaRepo.salvar(tarefa);
-            ctx.redirect("/projetos-view/" + projetoId);
-        });
-
-        app.post("/projetos-view/{id}/tarefas/{tarefaId}/toggle", ctx -> {
-            Integer usuarioId = ctx.sessionAttribute("usuarioId");
-            if (usuarioId == null) {
-                ctx.redirect("/login-view");
-                return;
-            }
-
-            int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            int tarefaId = Integer.parseInt(ctx.pathParam("tarefaId"));
-
-            Tarefa tarefa = tarefaRepo.buscarPorId(tarefaId);
-
-            if (tarefa == null || tarefa.getUsuarioId() != usuarioId || tarefa.getProjetoId() != projetoId) {
-                ctx.status(404).result("Tarefa não encontrada");
-                return;
-            }
-
-            if ("Concluida".equals(tarefa.getStatus())) {
-                tarefa.setStatus("Pendente");
-            } else {
-                tarefa.setStatus("Concluida");
-            }
-
-            tarefaRepo.salvar(tarefa);
-            ctx.redirect("/projetos-view/" + projetoId);
-        });
-
-        app.get("/projetos-view/{id}/tarefas/{tarefaId}/editar", ctx -> {
-            Integer usuarioId = ctx.sessionAttribute("usuarioId");
-            if (usuarioId == null) {
-                ctx.redirect("/login-view");
-                return;
-            }
-
-            int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            int tarefaId = Integer.parseInt(ctx.pathParam("tarefaId"));
-
-            Projeto projeto = repository.buscarPorId(projetoId);
-            Tarefa tarefa = tarefaRepo.buscarPorId(tarefaId);
-
-            if (projeto == null || projeto.getUsuarioId() != usuarioId || tarefa == null
-                    || tarefa.getUsuarioId() != usuarioId || tarefa.getProjetoId() != projetoId) {
-                ctx.status(404).result("Não encontrado");
-                return;
-            }
-
-            Map<String, Object> model = new HashMap<>();
-            model.put("projeto", projeto);
-            model.put("tarefa", tarefa);
-            ctx.render("tarefa-editar.ftl", model);
-        });
-
-        app.post("/projetos-view/{id}/tarefas/{tarefaId}/editar", ctx -> {
-            Integer usuarioId = ctx.sessionAttribute("usuarioId");
-            if (usuarioId == null) {
-                ctx.redirect("/login-view");
-                return;
-            }
-
-            int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            int tarefaId = Integer.parseInt(ctx.pathParam("tarefaId"));
-
-            Projeto projeto = repository.buscarPorId(projetoId);
-            Tarefa tarefa = tarefaRepo.buscarPorId(tarefaId);
-
-            if (projeto == null || projeto.getUsuarioId() != usuarioId || tarefa == null
-                    || tarefa.getUsuarioId() != usuarioId || tarefa.getProjetoId() != projetoId) {
-                ctx.status(404).result("Não encontrado");
-                return;
-            }
-
-            tarefa.setTitulo(ctx.formParam("titulo"));
-
-            tarefaRepo.salvar(tarefa);
-            ctx.redirect("/projetos-view/" + projetoId);
-        });
-
-        app.post("/projetos-view/{id}/tarefas/{tarefaId}/delete", ctx -> {
-            Integer usuarioId = ctx.sessionAttribute("usuarioId");
-            if (usuarioId == null) {
-                ctx.redirect("/login-view");
-                return;
-            }
-
-            int projetoId = Integer.parseInt(ctx.pathParam("id"));
-            int tarefaId = Integer.parseInt(ctx.pathParam("tarefaId"));
-
-            Projeto projeto = repository.buscarPorId(projetoId);
-            Tarefa tarefa = tarefaRepo.buscarPorId(tarefaId);
-
-            if (projeto == null || projeto.getUsuarioId() != usuarioId || tarefa == null
-                    || tarefa.getUsuarioId() != usuarioId || tarefa.getProjetoId() != projetoId) {
-                ctx.status(404).result("Não encontrado");
-                return;
-            }
-
-            tarefaRepo.deletar(tarefaId);
+            tarefaDAO.inserir(tarefa);
             ctx.redirect("/projetos-view/" + projetoId);
         });
     }

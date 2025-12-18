@@ -43,6 +43,7 @@
         </li>
         </#list>
     </ul>
+    <a href="/projetos-view/"><button type="button" class="voltar">Voltar para Projetos</button></a>
 </div>
 </body>
 </html>

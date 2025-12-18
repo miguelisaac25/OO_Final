@@ -12,14 +12,13 @@ import java.util.List;
 public class UsuarioDAO {
 
     public void inserir(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO usuarios (email, senha) VALUES (?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, usuario.getNome());
-            stmt.setString(2, usuario.getEmail());
-            stmt.setString(3, usuario.getSenha());
+            stmt.setString(1, usuario.getEmail());
+            stmt.setString(2, usuario.getSenha());
             stmt.executeUpdate();
 
         } catch (Exception e) {
@@ -38,7 +37,6 @@ public class UsuarioDAO {
             while (rs.next()) {
                 Usuario usuario = new Usuario();
                 usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
                 usuario.setEmail(rs.getString("email"));
                 usuarios.add(usuario);
             }
@@ -48,22 +46,6 @@ public class UsuarioDAO {
         }
 
         return usuarios;
-    }
-
-    public void atualizar(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, usuario.getNome());
-            stmt.setString(2, usuario.getEmail());
-            stmt.setInt(3, usuario.getId());
-            stmt.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void deletar(int id) {
@@ -93,7 +75,6 @@ public class UsuarioDAO {
             if (rs.next()) {
                 usuario = new Usuario();
                 usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
                 usuario.setEmail(rs.getString("email"));
                 usuario.setSenha(rs.getString("senha"));
             }
@@ -105,27 +86,4 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    public Usuario buscarPorId(int id) {
-        String sql = "SELECT * FROM usuarios WHERE id = ?";
-        Usuario usuario = null;
-
-        try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
-                usuario.setEmail(rs.getString("email"));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return usuario;
-    }
 }

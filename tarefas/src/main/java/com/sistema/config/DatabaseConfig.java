@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DatabaseConfig {
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/sistema_tarefas?useSSL=false&allowPublicKeyRetrieval=true";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/sistema_tarefas?useSSL=false&allowPublicKeyRetrieval=true";  
 
     private static final String USER = "root";
     private static final String PASSWORD = "";
