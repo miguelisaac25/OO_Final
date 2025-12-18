@@ -33,22 +33,26 @@ Um sistema simples de gerenciamento de tarefas e projetos, desenvolvido em Java 
 ## Como Executar
 
 1. Clone o repositório:
+
    ```bash
    git clone <url-do-repositorio>
    cd tarefas
    ```
 
 2. Compile o projeto:
+
    ```bash
    mvn clean compile
    ```
 
 3. Execute a aplicação:
+
    ```bash
    mvn exec:java -Dexec.mainClass="com.sistema.App"
    ```
 
    Ou, para gerar um JAR executável:
+
    ```bash
    mvn package
    java -jar target/gerenciador-tarefas-1.0-SNAPSHOT.jar
