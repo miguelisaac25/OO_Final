@@ -113,9 +113,14 @@ public class TarefaController {
                 ctx.status(404);
                 return;
             }
-
+            int projetoId = tarefa.getProjetoId();
             dao.deletar(id);
-            ctx.redirect("/tarefas-view");
+
+            if (projetoId > 0) {
+                ctx.redirect("/projetos-view/" + projetoId);
+            } else {
+                ctx.redirect("/tarefas-view");
+            }
         });
     }
 }
