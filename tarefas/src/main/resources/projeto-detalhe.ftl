@@ -51,7 +51,6 @@
       <ul style="list-style: none; padding: 0;">
         <#list tarefas as t>
           <li style="margin-bottom: 10px; display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <#-- Botão de Concluir/Reabrir -->
             <form method="post" action="/tarefas-view/${t.id}/toggle" style="margin-right: 15px;">
               <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 20px; padding: 0;">
                 <#if t.status == "Concluida">
